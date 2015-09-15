@@ -1,0 +1,29 @@
+{
+  "name": "ng-cordova-bluetoothle",
+  "main": "./dist/ng-cordova-bluetoothle.js",
+  "version": "0.0.1",
+  "homepage": "http://github.com/Jewelbots/ng-cordova-bluetoothle",
+  "authors": [
+    "George Stocker <http://georgestocker.com>"
+  ],
+  "description": "AngularJS wrapper for the Apache Cordova / Adobe Phonegap Bluetoothle plugin",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "ng-cordova-bluetoothle",
+    "angularjs",
+    "mobile",
+    "apache cordova",
+    "phonegap",
+    "ionic framework"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
