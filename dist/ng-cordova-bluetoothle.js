@@ -2,7 +2,7 @@
 // install  :     cordova plugin add https://github.com/randdusing/BluetoothLE.git
 // link     :     https://github.com/randdusing/BluetoothLE
 
-angular.module('ngCordova.plugins.bluetoothle', [])
+angular.module('ngCordovaBluetoothle', [])
 
   .factory('$cordovaBluetoothle', ['$q', '$timeout', function($q, $timeout){
   'use strict';
