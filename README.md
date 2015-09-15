@@ -89,7 +89,10 @@ $ionicPlatform.ready()
               .notify(function (notify) {
                 //still trying to connect. 
               });
-          });```
+          });
+
+ 
+ ```
 
 ## Available Functions
 
