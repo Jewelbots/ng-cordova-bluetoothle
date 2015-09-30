@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <link href="lib/ionic/css/ionic.min.css" rel="stylesheet">
+
+    <style>
+      small { font-size: 12px; }
+    </style>
+
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ng-cordova-bluetoothle/dist/ng-cordova-bluetoothle.min.js"></script>
+
+    <script src="cordova.js"></script>
+
+    <script src="index.js"></script>
+  </head>
+
+  <body ng-app="myApp">
+
+    <ion-nav-view></ion-nav-view>
+
+    <script type=text/ng-template id=home.html>
+      <ion-view>
+        <ion-header-bar align-title="center" class="bar-positive">
+          <h1 class="title">Bluetooth LE</h1>
+        </ion-header-bar>
+        <ion-content>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="initialize()">Intialize</a></div>
+            <div class="col"><a class="button button-energized button-small" ng-click="enable()">Enable</a></div>
+            <div class="col"><a class="button button-energized button-small" ng-click="disable()">Disable</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="startScan()">Start Scan</a></div>
+            <div class="col"><a class="button button-energized button-small" ng-click="stopScan()">Stop Scan</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="retrieveConnected()">Retrv Connected</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="isInitialized()">Is Initialized</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="isEnabled()">Is Enabled</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="isScanning()">Is Scanning</a></div>
+          </div>
+          <div ng-hide="isEmpty(devices)">
+            <h2>Devices</h2>
+            <ion-list>
+              <ion-item ng-repeat="device in devices track by device.address" ng-click="goToDevice(device)" class="item-icon-right">
+                {{device.name | null}}
+                <div><small>&lt;{{device.address}}&gt;</small></div>
+                <i class="icon ion-chevron-right"></i>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script type=text/ng-template id=device.html>
+      <ion-view>
+        <ion-nav-bar>
+          <ion-nav-back-button>
+          </ion-nav-back-button>
+        </ion-nav-bar>
+        <ion-header-bar align-title="center" class="bar-positive">
+          <h1 class="title">{{selectedDevice.name | null}}</h1>
+        </ion-header-bar>
+        <ion-content>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="connect(selectedDevice.address)">Connect</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="reconnect(selectedDevice.address)">Reconnect</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-energized button-small" ng-click="disconnect(selectedDevice.address)">Disconnect</a></div>
+            <div class="col"><a class="button button-assertive button-small" ng-click="close(selectedDevice.address)">Close</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="discover(selectedDevice.address)">Discover</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="services(selectedDevice.address)">Services</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="isConnected(selectedDevice.address)">Is Connected</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="isDiscovered(selectedDevice.address)">Is Discovered</a></div>
+          </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="mtu(selectedDevice.address)">MTU</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="requestConnectionPriority(selectedDevice.address)">Request Connection Priority</a></div>
+          </div>
+          <ion-list>
+            <ion-item ng-repeat="service in selectedDevice.services track by service.uuid" ng-click="goToService(service)">
+              {{service.uuid}}
+              <i class="icon ion-chevron-right"></i>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script type=text/ng-template id=service.html>
+      <ion-view>
+        <ion-nav-bar>
+          <ion-nav-back-button></ion-nav-back-button>
+        </ion-nav-bar>
+        <ion-header-bar align-title="center" class="bar-positive">
+          <h1 class="title">{{selectedService.uuid}}</h1>
+        </ion-header-bar>
+        <ion-content>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="characteristics(selectedDevice.address, selectedService.uuid)">Characteristics</a></div>
+          </div>
+          <ion-list>
+            <ion-item ng-repeat="characteristic in selectedService.characteristics track by characteristic.uuid" ng-click="goToCharacteristic(characteristic)">
+              {{characteristic.uuid}}
+              <i class="icon ion-chevron-right"></i>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-view>
+    </script>
+
+    <script type=text/ng-template id=characteristic.html>
+      <ion-view>
+        <ion-nav-bar>
+          <ion-nav-back-button></ion-nav-back-button>
+        </ion-nav-bar>
+        <ion-header-bar align-title="center" class="bar-positive">
+          <h1 class="title">{{selectedCharacteristic.uuid}}</h1>
+        </ion-header-bar>
+        <ion-content>
+            <div class="row text-center">
+              <div class="col">
+                <a class="button button-balanced button-small" ng-click="descriptors(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid)">Descriptors</a>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col">
+                <a class="button button-balanced button-small" ng-click="read(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid)">Read</a>
+              </div>
+              <div class="col">
+                <a class="button button-balanced button-small" ng-click="write(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid)">Write</a>
+              </div>
+            </div>
+            <div class="row text-center">
+              <div class="col">
+                <a class="button button-balanced button-small" ng-click="subscribe(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid)">Subscribe</a>
+              </div>
+              <div class="col">
+                <a class="button button-energized button-small" ng-click="unsubscribe(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid)">Unsubscribe</a>
+              </div>
+            </div>
+            <ion-list>
+              <ion-item ng-repeat="descriptor in selectedCharacteristic.descriptors track by descriptor.uuid">
+                {{descriptor.uuid}}
+                <div class="row text-center">
+                  <div class="col">
+                    <a class="button button-balanced button-small" ng-click="readDescriptor(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid, descriptor.uuid)">Read</a>
+                  </div>
+                  <div class="col">
+                    <a class="button button-balanced button-small" ng-click="writeDescriptor(selectedDevice.address, service.uuid, selectedCharacteristic.uuid, descriptor.uuid)">Write</a>
+                  </div>
+                </div>
+              </ion-item>
+            </ion-list>
+        </ion-content>
+      </ion-view>
+    </script>
+
+  </body>
+
+</html>
