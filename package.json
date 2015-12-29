@@ -1,6 +1,6 @@
 {
     "name": "ng-cordova-bluetoothle",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "AngularJS wrapper for Phonegap / Cordova Bluetoothle plugin",
     "author": {
         "name": "George Stocker",
