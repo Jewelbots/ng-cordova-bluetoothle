@@ -42,22 +42,33 @@ angular.module('ngCordovaBluetoothle', [])
         return q.promise;
       },
       startScan: function (params) {
-        if (!params.hasOwnProperty('time')) {
-          params.time = 5000;
-        }
+        var foundDevices = [];
+        var scanDuration = 500; //milliseconds
         var q = $q.defer();
+
+        if (params.hasOwnProperty('scanDuration')) {
+          scanDuration = params.scanDuration;
+        }
+        else if (params.hasOwnProperty('time')) { //kept for backwards compatibility
+          params.scanDuration = params.time;
+        }
+
+        var timer = $timeout(function () {
+          q.resolve(foundDevices);
+        }, scanDuration);
+
         bluetoothle.startScan(function (result) {
           if (result.hasOwnProperty('status') && result.status === 'scanResult') {
-            $timeout(function () {
-              q.resolve(result);
-            }, params.time);
+            foundDevices.push(result);
           } else {
             q.notify(result);
           }
         }, function (error) {
+          $timeout.cancel(timer);
           q.reject(error);
         }, params);
         return q.promise;
+
       },
       stopScan: function() {
         var q = $q.defer();
@@ -275,19 +286,29 @@ angular.module('ngCordovaBluetoothle', [])
       */
       find: function (params) {
         var q = $q.defer();
+        var foundDevices = [];
+        var scanDuration = 500;
+        if (params.hasOwnProperty('scanDuration')) {
+          scanDuration = params.scanDuration;
+        } //milliseconds
+        var timer = $timeout(function () {
+            q.resolve(foundDevices);
+          }, scanDuration);
+
         if ((params.hasOwnProperty('address') && params.address.length > 0) || (params.hasOwnProperty('name') && params.name.length > 0)) {
           bluetoothle.startScan(function (result) {
             if ((result.hasOwnProperty('status') && result.status === 'scanResult') && (result.hasOwnProperty('address') && result.address === params.address) || (result.hasOwnProperty('name') && result.name.toLowerCase() === params.name.toLowerCase())) {
-                q.resolve(result);
-            } else {
-              q.notify(result);
+                foundDevices.push(result);
+                q.notify(foundDevices);
             }
           }, function (error) {
+            $timeout.cancel(timer);
             q.reject(error);
           }, params);
         } else {
           q.reject({ error: 'find requires \'name\' or \'address\' params ', params: params});
         }
+
         return q.promise;
       },
 
