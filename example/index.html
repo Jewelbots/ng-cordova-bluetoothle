@@ -41,6 +41,10 @@
             <div class="col"><a class="button button-balanced button-small" ng-click="isEnabled()">Is Enabled</a></div>
             <div class="col"><a class="button button-balanced button-small" ng-click="isScanning()">Is Scanning</a></div>
           </div>
+          <div class="row text-center">
+            <div class="col"><a class="button button-balanced button-small" ng-click="hasPermission()">Has Permission</a></div>
+            <div class="col"><a class="button button-balanced button-small" ng-click="requestPermission()">Request Permission</a></div>
+          </div>
           <div ng-hide="isEmpty(devices)">
             <h2>Devices</h2>
             <ion-list>
@@ -155,7 +159,7 @@
                     <a class="button button-balanced button-small" ng-click="readDescriptor(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid, descriptor.uuid)">Read</a>
                   </div>
                   <div class="col">
-                    <a class="button button-balanced button-small" ng-click="writeDescriptor(selectedDevice.address, service.uuid, selectedCharacteristic.uuid, descriptor.uuid)">Write</a>
+                    <a class="button button-balanced button-small" ng-click="writeDescriptor(selectedDevice.address, selectedService.uuid, selectedCharacteristic.uuid, descriptor.uuid)">Write</a>
                   </div>
                 </div>
               </ion-item>

@@ -1,4 +1,3 @@
-//TODO possibly issue with unsubscribe when not subscribeable
 //TODO add log to app
 
 angular.module('myApp', ['ionic', 'ngCordovaBluetoothLE'])
@@ -274,6 +273,44 @@ angular.module('myApp', ['ionic', 'ngCordovaBluetoothLE'])
 
     obj.services = {};
     $rootScope.devices[obj.address] = obj;
+  }
+
+  $rootScope.hasPermission = function() {
+    console.log("Has Permission");
+
+    $cordovaBluetoothLE.hasPermission().then(hasPermissionSuccess);
+  }
+
+  function hasPermissionSuccess(obj) {
+    console.log("Has Permission Success : " + JSON.stringify(obj));
+
+    if (obj.hasPermission)
+    {
+      console.log("Has Permission : true");
+    }
+    else
+    {
+      console.log("Has Permission : false");
+    }
+  }
+
+  $rootScope.requestPermission = function() {
+    console.log("Request Permission");
+
+    $cordovaBluetoothLE.requestPermission().then(requestPermissionSuccess);
+  }
+
+  function requestPermissionSuccess(obj) {
+    console.log("Request Permission Success : " + JSON.stringify(obj));
+
+    if (obj.requestPermission)
+    {
+      console.log("Request Permission : true");
+    }
+    else
+    {
+      console.log("Request Permission : false");
+    }
   }
 })
 
@@ -581,11 +618,11 @@ angular.module('myApp', ['ionic', 'ngCordovaBluetoothLE'])
       var service = device.services[obj.serviceUuid];
       var characteristic = service.characteristics[obj.characteristicUuid];
 
-      var descriptors = obj.descriptors;
+      var descriptors = obj.descriptorUuids;
 
       for (var i = 0; i < descriptors.length; i++)
       {
-        $rootScope.addDescriptor(descriptors[i].descriptorUuid, characteristic);
+        $rootScope.addDescriptor(descriptors[i], characteristic);
       }
     }
     else
