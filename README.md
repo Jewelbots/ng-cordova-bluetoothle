@@ -16,6 +16,7 @@ This wraps the [Bluetooth Low Energy Phonegap Plugin](https://github.com/randdus
 An example app has been created using the Ionic Framework to demonstrate the functionality. It's pretty basic right now, but eventually I'd like to make it into a pretty fancy Bluetooth LE explorer. To install the example app, follow the steps below:
 
 * Create a new Ionic Project: ionic start test tabs
+* Update Cordova Android to 5.0.0 if necessary: cordova platform update android@5.0.0
 * Install the Bluetooth LE plugin: cordova plugin add cordova-plugin-bluetoothle
 * Install the Angular Wrapper (need to fix): bower install git://github.com/randdusing/ng-cordova-bluetoothle.git#master
 * Add contents from /example to /www of the Cordova project, replacing if necessary

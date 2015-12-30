@@ -437,6 +437,34 @@ angular.module('ngCordovaBluetoothLE', [])
     return q.promise;
   };
 
+  var hasPermission = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.hasPermission(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var requestPermission = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.requestPermission(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
   var isConnected = function(params) {
     var q = $q.defer();
     if (window.bluetoothle === undefined) {
@@ -545,6 +573,8 @@ angular.module('ngCordovaBluetoothLE', [])
     isInitialized: isInitialized,
     isEnabled: isEnabled,
     isScanning: isScanning,
+    hasPermission: hasPermission,
+    requestPermission: requestPermission,
     isConnected: isConnected,
     isDiscovered: isDiscovered,
     requestConnectionPriority: requestConnectionPriority,
