@@ -2,309 +2,585 @@
 // install  :     cordova plugin add https://github.com/randdusing/BluetoothLE.git
 // link     :     https://github.com/randdusing/BluetoothLE
 
-angular.module('ngCordovaBluetoothle', [])
+angular.module('ngCordovaBluetoothLE', [])
+.factory('$cordovaBluetoothLE', ['$q', function($q){
+  var errorUnsupported = {error: "unsupported", message: "This function is not supported"};
 
-  .factory('$cordovaBluetoothle', ['$q', '$timeout', function($q, $timeout){
-  'use strict';
-    return {
-      initialize: function (params) {
-        var q = $q.defer();
-        if (!bluetoothle) {
-          q.resolve(null);
-          return q.promise;
+  var initialize = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.initialize(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var enable = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.enable(
+        null,
+        function(obj) {
+          q.reject(obj);
         }
+      );
+    }
+    return q.promise;
+  };
 
-        bluetoothle.initialize(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-
-      enable: function () {
-        var q = $q.defer();
-        bluetoothle.enable(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        });
-        return q.promise;
-      },
-
-      disable: function () {
-        var q = $q.defer();
-        bluetoothle.disable(function (result) {
-          q.resolve(result);
-        }, function (error){
-          q.reject(error);
-        });
-        return q.promise;
-      },
-      startScan: function (params) {
-        if (!params.hasOwnProperty('time')) {
-          params.time = 5000;
+  var disable = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.disable(
+        null,
+        function(obj) {
+          q.reject(obj);
         }
-        var q = $q.defer();
-        bluetoothle.startScan(function (result) {
-          if (result.hasOwnProperty('status') && result.status === 'scanResult') {
-            $timeout(function () {
-              q.resolve(result);
-            }, params.time);
-          } else {
-            q.notify(result);
-          }
-        }, function (error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      stopScan: function() {
-        var q = $q.defer();
-        bluetoothle.stopScan(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        });
-        return q.promise;
-      },
-      retrieveConnected: function(params) {
-        var q = $q.defer();
-        bluetoothle.retrieveConnected(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      connect: function(params) {
-        var q = $q.defer();
-        bluetoothle.connect(function(result){
-          if (result.hasOwnProperty('status') && result.status === 'connected') {
-            q.resolve(result);
-          }
-          else if(result.hasOwnProperty('status') && result.status === 'connecting') {
-            q.notify(result);
-          }
-          else if (result.hasOwnProperty('status') && result.status === 'disconnected') {
-            q.reject(result);
-          }
-          else {
-            q.notify(result);
-          }
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      reconnect: function(params) {
-        var q = $q.defer();
-        bluetoothle.reconnect(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      disconnect: function(params) {
-        var q = $q.defer();
-        bluetoothle.disconnect(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      close: function(params) {
-        var q = $q.defer();
-        bluetoothle.close(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      discover: function(params) {
-        var q = $q.defer();
-        bluetoothle.discover(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      services: function(params) {
-        var q = $q.defer();
-        bluetoothle.services(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      characteristics: function(params) {
-        var q = $q.defer();
-        bluetoothle.characteristics(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      descriptors: function(params) {
-        var q = $q.defer();
-        bluetoothle.descriptors(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      read: function(params) {
-        var q = $q.defer();
-        bluetoothle.read(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      subscribe: function(params) {
-        var q = $q.defer();
-        bluetoothle.subscribe(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      unsubscribe: function(params) {
-        var q = $q.defer();
-        bluetoothle.unsubscribe(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      write: function(params) {
-        var q = $q.defer();
-        bluetoothle.write(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      readDescriptor: function(params) {
-        var q = $q.defer();
-        bluetoothle.readDescriptor(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      writeDescriptor: function(params) {
-        var q = $q.defer();
-        bluetoothle.writeDescriptor(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      rssi: function(params) {
-        var q = $q.defer();
-        bluetoothle.rssi(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      isInitialized: function() {
-        var q = $q.defer();
-        bluetoothle.isInitialized(function(result){
-          q.resolve(result);
-        });
-        return q.promise;
-      },
-      isEnabled: function() {
-        var q = $q.defer();
-        bluetoothle.isEnabled(function(result){
-          q.resolve(result);
-        });
-        return q.promise;
-      },
-      isScanning: function() {
-        var q = $q.defer();
-        bluetoothle.isScanning(function(result){
-          q.resolve(result);
-        });
-        return q.promise;
-      },
+      );
+    }
+    return q.promise;
+  };
 
-      isConnected: function(params) {
-        var q = $q.defer();
-        bluetoothle.isConnected(function(result){
-          q.resolve(result);
-        }, params);
-        return q.promise;
-      },
+  var startScan = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.startScan(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
 
-      isDiscovered: function(params) {
-        var q = $q.defer();
-        bluetoothle.isDiscovered(function(result){
-          q.resolve(result);
-        }, params);
-        return q.promise;
-      },
-
-      requestConnectionPriority: function(params) {
-        var q = $q.defer();
-        bluetoothle.requestConnectionPriority(function(result){
-          q.resolve(result);
-        }, function(error) {
-          q.reject(error);
-        }, params);
-        return q.promise;
-      },
-      /*
-        params: used to find a specific device by name or address.
-      */
-      find: function (params) {
-        var q = $q.defer();
-        if ((params.hasOwnProperty('address') && params.address.length > 0) || (params.hasOwnProperty('name') && params.name.length > 0)) {
-          bluetoothle.startScan(function (result) {
-            if ((result.hasOwnProperty('status') && result.status === 'scanResult') && (result.hasOwnProperty('address') && result.address === params.address) || (result.hasOwnProperty('name') && result.name.toLowerCase() === params.name.toLowerCase())) {
-                q.resolve(result);
-            } else {
-              q.notify(result);
-            }
-          }, function (error) {
-            q.reject(error);
-          }, params);
-        } else {
-          q.reject({ error: 'find requires \'name\' or \'address\' params ', params: params});
+  var stopScan = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.stopScan(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
         }
-        return q.promise;
-      },
+      );
+    }
+    return q.promise;
+  };
 
-      encodedStringToBytes : function(string){
-        return bluetoothle.encodedStringToBytes(string);
-      },
+  var retrieveConnected = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.retrieveConnected(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
 
-      bytesToEncodedString : function(string) {
-        return bluetoothle.bytesToEncodedString(string);
-      },
+  var connect = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.connect(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
 
-      stringToBytes : function(string) {
-        return bluetoothle.stringToBytes(string);
-      },
+  var reconnect = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.reconnect(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
 
-      bytesToString: function(bytes) {
-        return bluetoothle.bytesToString(bytes);
-      }
-    };
-  }]);
+  var disconnect = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.disconnect(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var close = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.close(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var discover = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.discover(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var services = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.services(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var characteristics = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.characteristics(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var descriptors = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.descriptors(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var read = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.read(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var subscribe = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.subscribe(
+        function(obj) {
+          q.notify(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var unsubscribe = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.unsubscribe(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var write = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.write(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var readDescriptor = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.readDescriptor(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var writeDescriptor = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.writeDescriptor(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var rssi = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.rssi(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var mtu = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.mtu(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var isInitialized = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.isInitialized(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var isEnabled = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.isEnabled(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var isScanning = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.isScanning(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var hasPermission = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.hasPermission(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var requestPermission = function() {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.requestPermission(
+        function(obj) {
+          q.resolve(obj);
+        }
+      );
+    }
+    return q.promise;
+  };
+
+  var isConnected = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.isConnected(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var isDiscovered = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.isDiscovered(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var requestConnectionPriority = function(params) {
+    var q = $q.defer();
+    if (window.bluetoothle === undefined) {
+      q.reject(errorUnsupported);
+    } else {
+      window.bluetoothle.requestConnectionPriority(
+        function(obj) {
+          q.resolve(obj);
+        },
+        function(obj) {
+          q.reject(obj);
+        },
+        params
+      );
+    }
+    return q.promise;
+  };
+
+  var encodedStringToBytes = function(value) {
+    if (window.bluetoothle === undefined) {
+      return;
+    }
+    return window.bluetoothle.encodedStringToBytes(value);
+  };
+
+  var bytesToEncodedString = function(value) {
+    if (window.bluetoothle === undefined) {
+      return;
+    }
+    return window.bluetoothle.bytesToEncodedString(value);
+  };
+
+  var stringToBytes = function(value) {
+    if (window.bluetoothle === undefined) {
+      return;
+    }
+    return window.bluetoothle.stringToBytes(value);
+  };
+
+  var bytesToString = function(value) {
+    if (window.bluetoothle === undefined) {
+      return;
+    }
+    return window.bluetoothle.bytesToString(value);
+  };
+
+  return {
+    initialize: initialize,
+    enable: enable,
+    disable: disable,
+    startScan: startScan,
+    stopScan: stopScan,
+    retrieveConnected: retrieveConnected,
+    connect: connect,
+    reconnect: reconnect,
+    disconnect: disconnect,
+    close: close,
+    discover: discover,
+    services: services,
+    characteristics: characteristics,
+    descriptors: descriptors,
+    read: read,
+    subscribe: subscribe,
+    unsubscribe: unsubscribe,
+    write: write,
+    readDescriptor: readDescriptor,
+    writeDescriptor: writeDescriptor,
+    rssi: rssi,
+    mtu: mtu,
+    isInitialized: isInitialized,
+    isEnabled: isEnabled,
+    isScanning: isScanning,
+    hasPermission: hasPermission,
+    requestPermission: requestPermission,
+    isConnected: isConnected,
+    isDiscovered: isDiscovered,
+    requestConnectionPriority: requestConnectionPriority,
+    encodedStringToBytes: encodedStringToBytes,
+    bytesToEncodedString: bytesToEncodedString,
+    stringToBytes: stringToBytes,
+    bytesToString: bytesToString
+  };
+}]);
