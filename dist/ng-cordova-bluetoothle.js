@@ -260,6 +260,8 @@ angular.module('ngCordovaBluetoothle', [])
         var q = $q.defer();
         bluetoothle.isConnected(function(result){
           q.resolve(result);
+        }, function(error) {
+          q.reject(error);
         }, params);
         return q.promise;
       },
