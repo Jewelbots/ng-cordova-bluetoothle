@@ -1,7 +1,7 @@
 {
   "name": "ng-cordova-bluetoothle",
   "main": "./dist/ng-cordova-bluetoothle.js",
-  "version": "0.0.1",
+  "version": "0.1.5",
   "homepage": "http://github.com/Jewelbots/ng-cordova-bluetoothle",
   "authors": [
     "George Stocker <http://georgestocker.com>"
